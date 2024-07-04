@@ -4,6 +4,8 @@
 mkdir Repos
 mkdir Development
 
+sudo pacman -S curl wget git
+
 # update packages & install YAY
 # sudo pacman -Syu
 # pacman -S --needed git base-devel
