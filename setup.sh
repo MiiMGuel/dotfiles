@@ -29,5 +29,5 @@ sudo updatedb
 # cp .tmux.conf ~/.tmux.conf
 
 # install packer for neovim
-# git clone --depth 1 https://github.com/wbthomason/packer.nvim\ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+# git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 # cp -r .config/nvim ~/.config/
