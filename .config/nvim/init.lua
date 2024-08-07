@@ -1,4 +1,4 @@
--- packer --
+--- packer --
 require("packer").startup(function(use) 
     use 'wbthomason/packer.nvim'
 
@@ -21,11 +21,20 @@ require("packer").startup(function(use)
             {'williamboman/mason.nvim'},
             {'williamboman/mason-lspconfig.nvim'},
 
-            {'neovim/nvim-lspconfig'},
+            {'neovim/nvim-lspconfig', 
+                opts = {
+                    autoformat = false,
+                }
+            },
             {'hrsh7th/nvim-cmp'},
             {'hrsh7th/cmp-nvim-lsp'},
             {'L3MON4D3/LuaSnip'},
         }
+    }
+
+    use {
+        'nvim-lualine/lualine.nvim',
+        requires = { 'nvim-tree/nvim-web-devicons', opt = true }
     }
 end)
 
@@ -41,9 +50,23 @@ vim.opt.smartindent   = true
 vim.opt.incsearch     = true
 vim.opt.termguicolors = true
 vim.opt.updatetime    = 50
+vim.opt.undofile      = true
+vim.opt.scrolloff     = 10
 
 -- remap -- 
 vim.g.mapleader = " "
+
+-- keymap --
+vim.keymap.set('n', '<leader>.', ':bnext<cr>', {})
+vim.keymap.set('n', '<leader>,', ':bNext<cr>', {})
+vim.keymap.set('n', '<leader>bx', ':bdelete<cr>', {})
+vim.keymap.set('n', '<leader>wh', ':split<cr>', {})
+vim.keymap.set('n', '<leader>wv', ':vsplit<cr>', {})
+vim.keymap.set('n', '<leader>wx', ':close<cr>', {})
+vim.keymap.set('n', '<leader>h', ':wincmd h<cr>', {})
+vim.keymap.set('n', '<leader>j', ':wincmd j<cr>', {})
+vim.keymap.set('n', '<leader>k', ':wincmd k<cr>', {})
+vim.keymap.set('n', '<leader>l', ':wincmd l<cr>', {})
 
 -- telescope setup -- 
 local telescope_builtin = require('telescope.builtin')
@@ -78,8 +101,10 @@ require('nvim-treesitter.configs').setup {
 
 -- LSP-Zero setup --
 local lsp = require("lsp-zero")
-
 lsp.preset("recommended")
+lsp.on_attach(function(client, bufnr)
+    lsp.default_keymaps({buffer = bufnr})
+end)
 
 -- local cmp          = require('cmp')
 -- local cmp_select   = { behavior = cmp.SelectBehavior.Select }
@@ -94,7 +119,7 @@ require('mason').setup({})
 require('mason-lspconfig').setup({
     -- Replace the language servers listed here
     -- with the ones you want to install
-    ensure_installed = {'clangd', 'zls'},
+    -- ensure_installed = {'clangd', 'zls'},
     handlers = {
         function(server_name)
             require('lspconfig')[server_name].setup({})
@@ -102,23 +127,52 @@ require('mason-lspconfig').setup({
     }
 })
 
-require('lspconfig').clangd.setup{
-    on_attach = on_attach,
-    cmd = {
-        "clangd",
-        "--background-index",
-        "--pch-storage=memory",
-        "--all-scopes-completion",
-        "--pretty",
-        "--header-insertion=never",
-        "-j=4",
-        "--inlay-hints",
-        "--header-insertion-decorators",
-        "--function-arg-placeholders",
-        "--completion-style=detailed"
+require('lspconfig').zls.setup({
+    on_init = function(client)
+        vim.g.zig_fmt_autosave = 0
+        client.server_capabilities.documentFormattingProvider = false
+        client.server_capabilities.documentFormattingRangeProvider = false
+    end
+})
+
+-- LuaLine setup --
+require('lualine').setup {
+    options = {
+        icons_enabled = true,
+        theme = 'gruvbox_dark',
+        component_separators = { left = '', right = ''},
+        section_separators = { left = '', right = ''},
+        disabled_filetypes = {
+            statusline = {},
+            winbar = {},
+        },
+        ignore_focus = {},
+        always_divide_middle = true,
+        globalstatus = false,
+        refresh = {
+            statusline = 1000,
+            tabline = 1000,
+            winbar = 1000,
+        }
     },
-    filetypes = {"c", "cpp"},
-    root_dir = require('lspconfig').util.root_pattern("src"),
-    init_option = { fallbackFlags = {  "-std=c++20"  } },
-    capabilities = capabilities
+    sections = {
+        lualine_a = {'mode'},
+        lualine_b = {'filename'},
+        lualine_c = {'branch', 'diff', 'diagnostics'},
+        lualine_x = {'buffers'},
+        lualine_y = {'progress'},
+        lualine_z = {'encoding', 'location'}
+    },
+    inactive_sections = {
+        lualine_a = {},
+        lualine_b = {'filename'},
+        lualine_c = {},
+        lualine_x = {'location'},
+        lualine_y = {},
+        lualine_z = {}
+    },
+    tabline = {},
+    winbar = {},
+    inactive_winbar = {},
+    extensions = {}
 }

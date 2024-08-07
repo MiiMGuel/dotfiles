@@ -54,9 +54,18 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color -al $realpath'
 # Aliases
 alias ls='ls --color -l'
 alias vim='nvim'
+alias pre='premake5'
+
+# Key binds
+bindkey "^[[1;5C" forward-word
+bindkey "^[[1;5D" backward-word
 
 # Shell integrations
 eval "$(fzf --zsh)"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+# Startups
+pfetch
