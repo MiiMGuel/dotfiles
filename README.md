@@ -1,2 +1,2 @@
 # dotfiles
-all configuration and dor files i use
+all configuration and dot files i use
